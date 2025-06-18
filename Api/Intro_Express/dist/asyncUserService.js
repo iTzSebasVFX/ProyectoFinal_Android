@@ -9,9 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registrarUsuario = registrarUsuario;
 exports.accesoUsuario = accesoUsuario;
@@ -64,24 +61,18 @@ exports.deleteReceta = deleteReceta;
 //-------------------------------------------------------------------------------
 // ------------------- MENEJO DE DATOS CON BASE DE DATOS ------------------------
 // npm install mysql2
-const promise_1 = __importDefault(require("mysql2/promise"));
-const pool = promise_1.default.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'proyectofinal_recetas'
-});
+const db_1 = require("./db");
 // Usuarios
 function registrarUsuario(nombre, correo, contraseña) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [resultados] = yield pool.query('INSERT INTO usuarios (nombre, correo, contraseña) VALUES (?, ?, ?)', [nombre, correo, contraseña]);
+        const [resultados] = yield db_1.pool.query('INSERT INTO usuarios (nombre, correo, contraseña) VALUES (?, ?, ?)', [nombre, correo, contraseña]);
         const id = resultados.insertId;
         return { id, nombre, correo, contraseña };
     });
 }
 function accesoUsuario(correo, contraseña) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [buscar] = yield pool.query('SELECT * FROM `usuarios` WHERE correo = ? AND contraseña = ?', [correo, contraseña]);
+        const [buscar] = yield db_1.pool.query('SELECT * FROM `usuarios` WHERE correo = ? AND contraseña = ?', [correo, contraseña]);
         if (buscar.length === 0) {
             throw new Error("Usuario no encontrado");
         }
@@ -92,14 +83,14 @@ function accesoUsuario(correo, contraseña) {
 // Recetas
 function nuevaReceta(nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad, id_usuario) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [resultados] = yield pool.query('INSERT INTO `recetas`(`nombre`, `ingredientes`, `instrucciones`, `tiempo_preparacion`, `porciones`, `dificultad`, `id_usuario`) VALUES (?, ?, ?, ?, ?, ?, ?)', [nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad, id_usuario]);
+        const [resultados] = yield db_1.pool.query('INSERT INTO `recetas`(`nombre`, `ingredientes`, `instrucciones`, `tiempo_preparacion`, `porciones`, `dificultad`, `id_usuario`) VALUES (?, ?, ?, ?, ?, ?, ?)', [nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad, id_usuario]);
         const id = resultados.insertId;
         return { id, nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad, id_usuario };
     });
 }
 function buscarRecetas(id_usuario) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [resultados] = yield pool.query('SELECT * FROM recetas AS r JOIN usuarios AS u ON u.id = r.id_usuario WHERE id_usuario = ?;', [id_usuario]);
+        const [resultados] = yield db_1.pool.query('SELECT * FROM recetas AS r JOIN usuarios AS u ON u.id = r.id_usuario WHERE id_usuario = ?;', [id_usuario]);
         if (resultados.length === 0)
             throw new Error("Recetas no encontradas");
         return resultados;
@@ -107,19 +98,19 @@ function buscarRecetas(id_usuario) {
 }
 function buscarRecetasByID(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [recetas] = yield pool.query('SELECT * FROM recetas WHERE id = ?', [id]);
+        const [recetas] = yield db_1.pool.query('SELECT * FROM recetas WHERE id = ?', [id]);
         return recetas;
     });
 }
 function actualizarReceta(id, nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [resultados] = yield pool.query('UPDATE `recetas` SET `nombre`=?,`ingredientes`=?,`instrucciones`=?,`tiempo_preparacion`=?,`porciones`=?,`dificultad`=? WHERE id = ?', [nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad, id]);
+        const [resultados] = yield db_1.pool.query('UPDATE `recetas` SET `nombre`=?,`ingredientes`=?,`instrucciones`=?,`tiempo_preparacion`=?,`porciones`=?,`dificultad`=? WHERE id = ?', [nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad, id]);
         return resultados;
     });
 }
 function deleteReceta(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [resultados] = yield pool.query('DELETE FROM recetas WHERE id = ?', [id]);
+        const [resultados] = yield db_1.pool.query('DELETE FROM recetas WHERE id = ?', [id]);
         return resultados;
     });
 }

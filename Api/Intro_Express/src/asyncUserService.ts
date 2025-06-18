@@ -59,7 +59,7 @@
 
 // npm install mysql2
 
-import mysql from 'mysql2/promise';
+import { pool } from "./db";
 
 export interface User {
     id: string;
@@ -78,13 +78,6 @@ export interface Recipes {
     dificultad: string;
     id_usuario: number;
 }
-
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'proyectofinal_recetas'
-});
 
 // Usuarios
 
