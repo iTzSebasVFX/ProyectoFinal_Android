@@ -186,10 +186,3 @@ app/
 ## ✍️ Autor
 
 Desarrollado por **Juan Sebastián Quiceno Cano**
-
-```
-
----
-
-✅ **Este README te sirve para documentación profesional**, tanto para portafolios como presentaciones. Si quieres añadir capturas de pantalla, animaciones o GIFs más adelante, puedo ayudarte con eso también.
-```
