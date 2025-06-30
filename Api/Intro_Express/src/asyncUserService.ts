@@ -81,13 +81,12 @@ export interface Recipes {
 
 // Usuarios
 
-export async function registrarUsuario(nombre: string, correo: string, contraseña: string): Promise<User> {
+export async function registrarUsuario(nombre: string, correo: string, contraseña: string): Promise<any> {
     const [resultados]: any = await pool.query(
         'INSERT INTO usuarios (nombre, correo, contraseña) VALUES (?, ?, ?)',
         [nombre, correo, contraseña]
     );
-    const id = resultados.insertId;
-    return { id, nombre, correo, contraseña };
+    return resultados;
 }
 
 export async function accesoUsuario(correo: string, contraseña: string): Promise<User> {
@@ -108,18 +107,17 @@ export async function nuevaReceta(
     porciones: string,
     dificultad: string,
     id_usuario: number,
-): Promise<Recipes> {
+): Promise<any> {
     const [resultados]: any = await pool.query(
         'INSERT INTO `recetas`(`nombre`, `ingredientes`, `instrucciones`, `tiempo_preparacion`, `porciones`, `dificultad`, `id_usuario`) VALUES (?, ?, ?, ?, ?, ?, ?)',
         [nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad, id_usuario]
     );
-    const id = resultados.insertId;
-    return { id, nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad, id_usuario };
+    return resultados;
 }
 
 export async function buscarRecetas(id_usuario: number) {
     const [resultados]: any = await pool.query(
-        'SELECT * FROM recetas AS r JOIN usuarios AS u ON u.id = r.id_usuario WHERE id_usuario = ?;',
+        'SELECT r.id, r.nombre, r.ingredientes, r.instrucciones, r.tiempo_preparacion, r.porciones, r.dificultad, r.id_usuario FROM recetas AS r JOIN usuarios AS u ON u.id = r.id_usuario WHERE id_usuario = ?;',
         [id_usuario]
     );
     if (resultados.length === 0) throw new Error("Recetas no encontradas");
@@ -131,23 +129,7 @@ export async function buscarRecetasByID(id: number) {
         'SELECT * FROM recetas WHERE id = ?',
         [id]
     );
-    return recetas;
-}
-
-export async function actualizarReceta(
-    id: number,
-    nombre: string,
-    ingredientes: string,
-    instrucciones: string,
-    tiempo_preparacion: string,
-    porciones: string,
-    dificultad: string
-): Promise<any> {
-    const [resultados]: any = await pool.query(
-        'UPDATE `recetas` SET `nombre`=?,`ingredientes`=?,`instrucciones`=?,`tiempo_preparacion`=?,`porciones`=?,`dificultad`=? WHERE id = ?',
-        [nombre, ingredientes, instrucciones, tiempo_preparacion, porciones, dificultad, id]
-    );
-    return resultados;
+    return recetas[0];
 }
 
 export async function deleteReceta(id: number): Promise<any> {
